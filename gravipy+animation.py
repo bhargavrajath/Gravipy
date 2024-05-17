@@ -19,6 +19,7 @@
 import numpy as np
 from mpl_toolkits import mplot3d
 from matplotlib import pyplot as plt
+import json
 
 ##################################
 # Resources and Constants #
@@ -55,34 +56,17 @@ TN = 1e3  # Ton in kg
 MSOL = 1.988e30  # Solar mass in kg
 
 ################################################################################
-# Input Variables - edit as needed #
+# Input Variables - edit config file as needed #
 ################################################################################
 
-# Time step
-dt = 0.5 * DY
-
-# simulation length
-T = 1 * YR
-
-# Number of bodies
-N = 3
-
-# Masses of the bodies (kg)
-M = np.array([1 * MSOL,
-              5.97e24,
-              2.10e10])
-
-# Initial positions in cartesian frame
-#               [x, y, z]
-s0 = np.array([[0, 0, 0],
-               [1 * AU, 0, 0],
-               [1.25e8 * KM, 0, 0]])
-
-# Initial velocities in cartesian frame
-#               [x, y, z]
-v0 = np.array([[0, 0, 0],
-               [0, 29.7, 0],
-               [0, 35, 5]]) * KM / S
+with open('config.JSON') as config_file:
+    data = json.load(config_file)
+T = data['Simulation length']*YR
+dt = data['Time step']*DY
+N = data['Number of bodies']
+M = np.array(data['Mass of bodies'])
+s0 = np.array(data['Initial positions'])
+v0 = np.array(data['Initial velocities'])
 
 ################################################################################
 # Initialisation #

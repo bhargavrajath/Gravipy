@@ -1,0 +1,8 @@
+{
+  "Simulation length" : 1.1,
+  "Time step" : 0.5,
+  "Number of bodies" : 3,
+  "Mass of bodies" : [1.988e30,5.97e24,2.10e10],
+  "Initial positions" : [[0, 0, 0],[1.496e11, 0, 0],[1.25e11, 0, 0]],
+  "Initial velocities" : [[0, 0, 0],[0, 29700, 0],[0, 35000, 5000]]
+}
