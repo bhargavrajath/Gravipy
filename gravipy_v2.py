@@ -1,9 +1,9 @@
-###############
-### GRAVIPY ###
-###############
+#####################
+### GRAVIPY v2.0 ####
+#####################
 
-# by R. Bhargav (https://github.com/bhargavrajath)
-# with additional edits from H. Dawe. Version H.0
+# By Bhargav N (github.com/bhargavrajath) and Hannah Dawe (github.com/hannxmarie)
+
 
 # This code simulates the trajectories of 3 bodies under their mutual gravitational influences, in 3 - dimensions, for given initial conditions.
 # Gravity has been modelled using Netwonian law of gravitation and Newtonian mechanics. Relativistic effects ignored.
@@ -19,7 +19,7 @@
 import numpy as np
 from mpl_toolkits import mplot3d
 from matplotlib import pyplot as plt
-from matplotlib import animation
+import json
 
 ##################################
 # Resources and Constants #
@@ -55,35 +55,38 @@ KG = 1  # Kilogram (kg)
 TN = 1e3  # Ton in kg
 MSOL = 1.988e30  # Solar mass in kg
 
+# Units also stored as a dictionary for config
+units = {
+'km' : 1e3,  # Kilometres in m
+'AU' : 1.496e11,  # Astronomical Unit in m
+'LY' : 9.461e+15,  # Light Year in m
+'PC' : 3.086e+16,  # Parsec in m
+
+# Units for time
+'s' : 1,  # seconds (s)
+'hr' : 3600,  # Hour in s
+'dy' : 86162.4,  # Sidereal day in s
+'yr' : 31.47e6,  # Sidereal year in s
+
+# Units for mass
+'kg' : 1,  # Kilogram (kg)
+'tn' : 1e3,  # Ton in kg
+'MSOL' : 1.988e30  # Solar mass in kg
+}
+
 ################################################################################
-# Input Variables - edit as needed #
+# Input Variables - edit config file as needed #
 ################################################################################
 
-# Simulation length
-T = 1.1 * YR
+with open('d:\Projects\Astrodynamics\config.JSON') as config_file:
+    data = json.load(config_file)
 
-# Simulation time step
-dt = 0.5 * DY
-
-# Number of bodies
-N = 3
-
-# Masses of the bodies (kg)
-M = np.array([1 * MSOL,
-              5.97e24,
-              2.10e10])
-
-# Initial positions in cartesian frame
-#               [x, y, z]
-s0 = np.array([[0, 0, 0],
-               [1 * AU, 0, 0],
-               [1.25e8 * KM, 0, 0]])
-
-# Initial velocities in cartesian frame
-#               [x, y, z]
-v0 = np.array([[0, 0, 0],
-               [0, 29.7, 0],
-               [0, 35, 5]]) * KM / S
+T = data['Simulation length'] * units[data['Simulation length unit']]
+dt = data['Time step'] * units[data['Time step unit']]
+N = data['Number of bodies']
+M = np.array(data['Mass of bodies']) * units[data['Mass unit']]
+s0 = np.array(data['Initial positions']) * units[data['Position unit']]
+v0 = np.array(data['Initial velocities']) * units[data['Velocity position unit']] / units[data['Velocity time unit']]
 
 ################################################################################
 # Initialisation #
@@ -163,63 +166,39 @@ for i in range(1, len(t)):
     for n in range(0, N):
         s[n, i, :], v[n, i, :] = integ(n, s[n, i - 1, :], v[n, i - 1, :], dt, i - 1)
 
-
-########################################################################################################################
 # Trajectory visualisation plots #
-# Hannah Animation Additions xoxo <3 #
-########################################################################################################################
+
+plt.figure(1)
+ax = plt.axes(projection='3d')
 
 # making life slightly easier
 u = AU
-yu = 1e6 * KM  # Million kms
-xu = YR
 
 # Graphical output axis label name
 ulabel = '(AU)'
 
-# Data set
-numDataPoints = len(t)
+for n in range(0, N):
+    # ax.plot(s[n, 0, x] / u, s[n, 0, y] / u, s[n, 0, z] / u, 'x')  # Plot initial positions
+    ax.plot(s[n, :, x] / u, s[n, :, y] / u, s[n, :, z] / u)  # Plot trajectories
+    ax.plot(s[n, -1, x] / u, s[n, -1, y] / u, s[n, -1, z] / u, 'o')  # Plot final positions
 
-# animation loop
-def animate_func(num):
-    ax.clear()
-    ax.plot3D(s[1, :num + 1, x] / u, s[1, :num + 1, y] / u, s[1, :num + 1, z] / u, c='blue')  # Earth trajectory
-    ax.scatter(s[1, num, x] / u, s[1, num, y] / u, s[1, num, z] / u, c='blue', marker='o',label='Earth')  # Earth Current Position
-
-    ax.plot3D(s[2, :num + 1, x] / u, s[2, :num + 1, y] / u, s[2, :num + 1, z] / u, c='red')  # Asteroid Trajectory
-    ax.scatter(s[2, num, x] / u, s[2, num, y] / u, s[2, num, z] / u, c='red', marker='o',label='Asteroid')  # Asteroid Current Position
-
-    ax.plot3D(s[0, :num + 1, x] / u, s[0, :num + 1, y] / u, s[0, :num + 1, z] / u, c='orange')  # Sun Trajectory
-    ax.scatter(s[0, num, x] / u, s[0, num, y] / u, s[0, num, z] / u, c='orange', marker='o',label='Sun')  # Sun Current Position
-
-    ax.set_xlim3d([-1, 1])
-    ax.set_ylim3d([-1, 1])
-    ax.set_zlim3d([-0.5, 0.5])
-
-    ax.set_title('Trajectories \nTime = ' + str(np.round(t[num]/xu, decimals=2)) + ' Years')
-    ax.set_xlabel('X ' + ulabel)
-    ax.set_ylabel('Y ' + ulabel)
-    ax.set_zlabel('Z ' + ulabel)
-    ax.grid(True)
-    ax.legend()
-
-# plotting
-bg_color = 'black'
-fig = plt.figure(1)
-ax = plt.axes(projection='3d')
-ax.xaxis.set_pane_color(bg_color)
-ax.yaxis.set_pane_color(bg_color)
-ax.zaxis.set_pane_color(bg_color)
+ax.grid(True)
+plt.title('Trajectories')
+ax.set_xlabel('X ' + ulabel)
+ax.set_ylabel('Y ' + ulabel)
+ax.set_zlabel('Z ' + ulabel)
+ax.legend(['Initial Position', 'Trajectory', 'Final Position'])
 ax.set_aspect('equal')
-line_ani = animation.FuncAnimation(fig,animate_func,interval=1,frames=numDataPoints)
-
-plt.show()
+plt.tight_layout()
 
 ########################################################################################################################
 # Data Analysis - edit as needed #
 ########################################################################################################################
 
 plt.figure(2)
+yu = 1e6 * KM  # Million kms
+xu = YR
+
 # Generate data of interest for analysis - example separation between Earth and the asteroid,
 # requires norm on the 2nd level array (xyz) of the output position array
 data = np.linalg.norm(s[1, :, :] - s[2, :, :], axis=1)
@@ -230,4 +209,43 @@ plt.xlabel('Time (Years)')
 plt.ylabel('Separation (Million km)')
 plt.grid(True)
 plt.tight_layout()
+
+########################################################################################################################
+
+plt.show()
+
+########################################################################################################################
+# Hannah Animation Additions xoxo <3
+########################################################################################################################
+
+from matplotlib import animation
+
+# Data set
+numDataPoints = len(t)
+
+# animation loop
+def animate_func(num):
+    ax.clear()
+    ax.plot3D(s[1, :num + 1, x] / u, s[1, :num + 1, y] / u, s[1, :num + 1, z] / u, c='blue')  # Earth trajectory
+    ax.scatter(s[1, num, x] / u, s[1, num, y] / u, s[1, num, z] / u, c='blue', marker='o')  # Earth Current Position
+
+    ax.plot3D(s[2, :num + 1, x] / u, s[2, :num + 1, y] / u, s[2, :num + 1, z] / u, c='red')  # Asteroid Trajectory
+    ax.scatter(s[2, num, x] / u, s[2, num, y] / u, s[2, num, z] / u, c='red', marker='o')  # Asteroid Current Position
+
+    # ax.plot3D(s[0, :num + 1, x] / u, s[0, :num + 1, y] / u, s[0, :num + 1, z] / u, c='yellow')  # Sun Trajectory
+    ax.scatter(s[0, num, x] / u, s[0, num, y] / u, s[0, num, z] / u, c='yellow', marker='o')  # Sun Current Position
+
+    ax.set_xlim3d([-1, 1])
+    ax.set_ylim3d([-1, 1])
+    ax.set_zlim3d([-0.5, 0.5])
+
+    ax.set_title('Trajectory \nTime = ' + str(np.round(t[num]/xu, decimals=2)) + ' Years')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+
+# plotting
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+line_ani = animation.FuncAnimation(fig, animate_func, interval=0.1, frames=numDataPoints)
 plt.show()
