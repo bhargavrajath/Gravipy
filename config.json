@@ -11,4 +11,3 @@
 
   "Initial velocities" : [[0, 0, 0],[0, 29700, 0],[0, 35000, 5000]], "Velocity position unit" : "km", "Velocity time unit" : "s"
 }
-
