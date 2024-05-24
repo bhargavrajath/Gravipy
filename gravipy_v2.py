@@ -78,7 +78,7 @@ units = {
 # Input Variables - edit config file as needed #
 ################################################################################
 
-with open('d:\Projects\Astrodynamics\config.JSON') as config_file:
+with open('config.JSON') as config_file:
     data = json.load(config_file)
 
 T = data['Simulation length'] * units[data['Simulation length unit']]

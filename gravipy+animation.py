@@ -55,19 +55,47 @@ KG = 1  # Kilogram (kg)
 TN = 1e3  # Ton in kg
 MSOL = 1.988e30  # Solar mass in kg
 
+# Units also stored as a dictionary for config
+units = {
+'km' : 1e3,  # Kilometres in m
+'AU' : 1.496e11,  # Astronomical Unit in m
+'LY' : 9.461e+15,  # Light Year in m
+'PC' : 3.086e+16,  # Parsec in m
+
+# Units for time
+'s' : 1,  # seconds (s)
+'hr' : 3600,  # Hour in s
+'dy' : 86162.4,  # Sidereal day in s
+'yr' : 31.47e6,  # Sidereal year in s
+
+# Units for mass
+'kg' : 1,  # Kilogram (kg)
+'tn' : 1e3,  # Ton in kg
+'MSOL' : 1.988e30  # Solar mass in kg
+}
+
 ################################################################################
 # Input Variables - edit config file as needed #
 ################################################################################
 
 with open('config.JSON') as config_file:
     data = json.load(config_file)
-T = data['Simulation length']*YR
-dt = data['Time step']*DY
-N = data['Number of bodies']
-M = np.array(data['Mass of bodies'])
-s0 = np.array(data['Initial positions'])
-v0 = np.array(data['Initial velocities'])
+# T = data['Simulation length']*YR
+# dt = data['Time step']*DY
+# N = data['Number of bodies']
+# M = np.array(data['Mass of bodies'])
+# s0 = np.array(data['Initial positions'])
+# v0 = np.array(data['Initial velocities'])
 
+T = data['Simulation length'] * units[data['Simulation length unit']]
+dt = data['Time step'] * units[data['Time step unit']]
+N = data['Number of bodies']
+M = np.array(data['Mass of bodies']) * units[data['Mass unit']]
+s0 = np.array(data['Initial positions']) * units[data['Position unit']]
+v0 = np.array(data['Initial velocities']) * units[data['Velocity position unit']] / units[data['Velocity time unit']]
+
+print(s0)
+print(v0)
 ################################################################################
 # Initialisation #
 
@@ -184,7 +212,7 @@ xu = YR
 data = np.linalg.norm(s[1, :, :] - s[2, :, :], axis=1)
 
 plt.plot(t / xu, data / yu)
-plt.title('Separation v/s time')
+plt.title('Separation v/s Time')
 plt.xlabel('Time (Years)')
 plt.ylabel('Separation (Million km)')
 plt.grid(True)
