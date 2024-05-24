@@ -84,15 +84,15 @@ with open('config.JSON') as config_file:
 # dt = data['Time step']*DY
 # N = data['Number of bodies']
 # M = np.array(data['Mass of bodies'])
-# s0 = np.array(data['Initial positions'])
-# v0 = np.array(data['Initial velocities'])
+s0 = np.array(data['Initial positions'])
+v0 = np.array(data['Initial velocities'])
 
 T = data['Simulation length'] * units[data['Simulation length unit']]
 dt = data['Time step'] * units[data['Time step unit']]
 N = data['Number of bodies']
 M = np.array(data['Mass of bodies']) * units[data['Mass unit']]
-s0 = np.array(data['Initial positions']) * units[data['Position unit']]
-v0 = np.array(data['Initial velocities']) * units[data['Velocity position unit']] / units[data['Velocity time unit']]
+# s0 = np.array(data['Initial positions']) * units[data['Position unit']]
+# v0 = np.array(data['Initial velocities']) * units[data['Velocity position unit']] / units[data['Velocity time unit']]
 
 print(s0)
 print(v0)
