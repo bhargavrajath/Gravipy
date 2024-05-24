@@ -38,23 +38,6 @@ x = 0
 y = 1
 z = 2
 
-# Units for position (can be used for velocity, ex: AU/YR)
-KM = 1e3  # Kilometres in m
-AU = 1.496e11  # Astronomical Unit in m
-LY = 9.461e+15  # Light Year in m
-PC = 3.086e+16  # Parsec in m
-
-# Units for time
-S = 1  # seconds (s)
-HR = 3600  # Hour in s
-DY = 86162.4  # Sidereal day in s
-YR = 31.47e6  # Sidereal year in s
-
-# Units for mass
-KG = 1  # Kilogram (kg)
-TN = 1e3  # Ton in kg
-MSOL = 1.988e30  # Solar mass in kg
-
 # Units also stored as a dictionary for config
 units = {
 'km' : 1e3,  # Kilometres in m
@@ -180,7 +163,7 @@ plt.figure(1)
 ax = plt.axes(projection='3d')
 
 # making life slightly easier
-u = AU
+u = units["AU"]
 
 # Graphical output axis label name
 ulabel = '(AU)'
@@ -204,8 +187,8 @@ plt.tight_layout()
 ########################################################################################################################
 
 plt.figure(2)
-yu = 1e6 * KM  # Million kms
-xu = YR
+yu = 1e6 * units["km"]  # Million kms
+xu = units["yr"]
 
 # Generate data of interest for analysis - example separation between Earth and the asteroid,
 # requires norm on the 2nd level array (xyz) of the output position array
